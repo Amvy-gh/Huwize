@@ -40,21 +40,31 @@ const addArtikel = (body, gambar_artikel) => {
   }
 };
 
-const updateArtikel = (body, id, gambar) => {
-  const { judul_artikel, author, isi_artikel, sumber_artikel } = body;
+const updateArtikel = (body, id, gambar_artikel) => {
+  let query = `UPDATE artikel_lingkungan SET 
+    judul_artikel = ?,
+    author = ?,
+    isi_artikel = ?,
+    sumber_artikel = ?`;
 
-  const title = judul_artikel || null;
-  const authorName = author || null;
-  const content = isi_artikel || null;
-  const image = gambar || null;
-  const sumber = sumber_artikel;
+  const values = [
+    body.judul_artikel,
+    body.author,
+    body.isi_artikel,
+    body.sumber_artikel
+  ];
 
-  const query =
-    "UPDATE artikel_lingkungan SET author = ?, judul_artikel = ?, gambar_artikel = ?, isi_artikel = ?, sumber_artikel = ? WHERE id_artikel = ?";
-  const params = [authorName, title, image, content, sumber, id];
+  // Hanya tambahkan update gambar jika ada gambar baru
+  if (gambar_artikel) {
+    query += `, gambar_artikel = ?`;
+    values.push(gambar_artikel);
+  }
+
+  query += ` WHERE id_artikel = ?`;
+  values.push(id);
 
   try {
-    return dbPool.execute(query, params);
+    return dbPool.execute(query, values);
   } catch (error) {
     throw error;
   }

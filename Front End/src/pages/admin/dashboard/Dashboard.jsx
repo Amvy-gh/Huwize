@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import {
-  FaChartLine,
   FaFileAlt,
   FaUsers,
   FaClipboardCheck,
@@ -9,7 +8,6 @@ import {
   FaEnvelope,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import Chart from "./Chart";
 
 import { getTotalArtikel } from "../../../services/Artikel/artikel.service";
 import {
@@ -174,9 +172,6 @@ const AdminDashboard = () => {
           {/* Jumlah Laporan Tuntas */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-red-100 rounded-lg">
-                <FaChartLine className="text-2xl text-red-600" />
-              </div>
               <span className="text-sm font-medium text-red-600 bg-red-100 px-5 py-1 rounded-full">
                 Laporan Tuntas
               </span>
@@ -185,16 +180,6 @@ const AdminDashboard = () => {
               {laporanSelesai[0]?.total_laporan_selesai || 0}
             </p>
             <p className="text-sm text-gray-500 mt-1">Laporan yang sudah ditindaklanjuti</p>
-          </div>
-        </div>
-
-        {/* Chart Section */}
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Statistik Pengunjung
-          </h3>
-          <div className="h-[400px]">
-            <Chart />
           </div>
         </div>
       </div>

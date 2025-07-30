@@ -128,7 +128,7 @@ const Footer = () => {
         initial="initial"
         animate="animate"
       >
-        <p>&copy; Copyright 2024 Desa Way Huwi</p>
+        <p>&copy; Copyright KKN ITERA 2025 WAY HUWI</p>
       </motion.div>
     </footer>
   );

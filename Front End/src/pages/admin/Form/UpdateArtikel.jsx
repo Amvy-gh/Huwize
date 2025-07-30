@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import InputLabel from "./InputLabel";
 import TextAreaLabel from "./TextAreaLabel";
 import {
-  getArtikel,
+  getArtikelById,
+  showGambar,
   updateArtikel,
 } from "../../../services/Artikel/artikel.service";
 
@@ -15,25 +16,27 @@ const UpdateArtikel = () => {
   const [author, setAuthor] = useState("");
   const [isiArtikel, setIsiArtikel] = useState("");
   const [sumberArtikel, setSumberArtikel] = useState("");
-  const [previousImageUrl, setPreviousImageUrl] = useState("");
+  const [currentImage, setCurrentImage] = useState("");
+  const [previewImage, setPreviewImage] = useState(null);
 
   useEffect(() => {
-    getArtikel((data) => {
-      const artikel = data.data.find(
-        (item) => item.id_artikel === parseInt(id)
-      );
+    getArtikelById(id, (data) => {
+      const artikel = data.data[0];
       if (artikel) {
         setJudulArtikel(artikel.judul_artikel);
         setAuthor(artikel.author);
         setIsiArtikel(artikel.isi_artikel);
         setSumberArtikel(artikel.sumber_artikel);
-        setPreviousImageUrl(artikel.gambar_artikel);
+        setCurrentImage(showGambar(artikel.gambar_artikel));
       }
     });
   }, [id]);
 
   const handleFileChange = (e) => {
-    setFile(URL.createObjectURL(e.target.files[0]));
+    const file = e.target.files[0];
+    if (file) {
+      setPreviewImage(URL.createObjectURL(file));
+    }
   };
 
   return (
@@ -81,25 +84,74 @@ const UpdateArtikel = () => {
             onChange={(e) => setIsiArtikel(e.target.value)}
           />
 
-          <InputLabel
-            label="Gambar Artikel :"
-            name="gambar_artikel"
-            type="file"
-            onChange={handleFileChange}
-            variant="py-2 px-4"
-            className="file:bg-green-100 file:text-green-700"
-          />
+          {/* Gambar Section */}
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Gambar Artikel Saat Ini:
+              </label>
+              {currentImage && (
+                <img
+                  src={currentImage}
+                  alt="Gambar Saat Ini"
+                  className="mt-2 w-48 h-48 object-cover rounded-lg border border-gray-200"
+                />
+              )}
+            </div>
 
-          {file && (
-            <img src={file} alt="preview" className="mt-4 w-32 h-32 rounded" />
-          )}
+            <div>
+              <div className="flex flex-col space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Upload Gambar Baru:
+                </label>
+                <p className="text-xs text-gray-500 italic">
+                  *Jika tidak ingin mengubah gambar, biarkan bagian ini kosong
+                </p>
+              </div>
+              <InputLabel
+                label=""
+                name="gambar_artikel"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                variant="py-2 px-4"
+                className="file:bg-green-100 file:text-green-700"
+                required={false}
+              />
+              {previewImage && (
+                <div className="mt-2 space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <p className="text-sm text-green-600 font-medium">
+                      Preview Gambar Baru:
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPreviewImage(null);
+                        document.querySelector('input[name="gambar_artikel"]').value =
+                          "";
+                      }}
+                      className="text-xs text-red-500 hover:text-red-700"
+                    >
+                      Batalkan perubahan gambar
+                    </button>
+                  </div>
+                  <img
+                    src={previewImage}
+                    alt="Preview"
+                    className="w-48 h-48 object-cover rounded-lg border border-gray-200"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
 
           <div className="flex justify-center mt-6">
             <button
               type="submit"
               className="bg-green-800 hover:bg-green-900 text-white font-semibold py-2 w-full sm:w-2/5 rounded-lg shadow-lg"
             >
-              Simpan Artikel
+              Simpan Perubahan
             </button>
           </div>
         </form>

@@ -85,10 +85,17 @@ const createArtikelForm = async (req, res, next) => {
 const updateArtikelForm = async (req, res) => {
   const { id } = req.params;
   const { body } = req;
-  const gambar_artikel = req.files.gambar_artikel[0].path;
 
   try {
-    await updateArtikel(body, id, gambar_artikel);
+    // Jika ada file gambar baru
+    if (req.files && req.files.gambar_artikel) {
+      const gambar_artikel = req.files.gambar_artikel[0].path;
+      await updateArtikel(body, id, gambar_artikel);
+    } else {
+      // Update tanpa mengubah gambar
+      await updateArtikel(body, id, null);
+    }
+
     res.status(200).json({
       message: "Artikel berhasil diupdate",
     });

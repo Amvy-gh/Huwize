@@ -100,9 +100,13 @@ export const updateArtikel = async (event, id) => {
   const formData = new FormData();
   formData.append("judul_artikel", event.target.judul_artikel.value);
   formData.append("author", event.target.author.value);
-  formData.append("gambar_artikel", event.target.gambar_artikel.files[0]);
   formData.append("isi_artikel", event.target.isi_artikel.value);
   formData.append("sumber_artikel", event.target.sumber_artikel.value);
+
+  // Hanya append gambar jika ada file yang dipilih
+  if (event.target.gambar_artikel.files[0]) {
+    formData.append("gambar_artikel", event.target.gambar_artikel.files[0]);
+  }
 
   try {
     const res = await axios.put(

@@ -1,116 +1,137 @@
 import React, { useEffect, useState } from "react";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaPlus, FaEye } from "react-icons/fa";
 import { BsFillXCircleFill } from 'react-icons/bs';
 import { Link, useNavigate } from "react-router-dom";
 import { deleteArtikel, getArtikel, showGambar } from "../../../services/Artikel/artikel.service";
 
-  const ArtikelTable = () => {
-    const navigate = useNavigate();
-    const [artikelData, setArtikelData] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [artikelsPerPage] = useState(5);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [currentImage, setCurrentImage] = useState("");
+const ArtikelTable = () => {
+  const navigate = useNavigate();
+  const [artikelData, setArtikelData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [artikelsPerPage] = useState(5);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentImage, setCurrentImage] = useState("");
+  const [showDescription, setShowDescription] = useState(false);
+  const [selectedDescription, setSelectedDescription] = useState("");
 
-    // Fetch data artikel saat komponen pertama kali dirender
-    useEffect(() => {
-      getArtikel((data) => {
-        setArtikelData(data.data);
+  // Fetch data artikel saat komponen pertama kali dirender
+  useEffect(() => {
+    getArtikel((data) => {
+      setArtikelData(data.data);
+    });
+  }, []);
+
+  const indexOfLastArtikel = currentPage * artikelsPerPage;
+  const indexOfFirstArtikel = indexOfLastArtikel - artikelsPerPage;
+  const currentArticles = artikelData.slice(indexOfFirstArtikel, indexOfLastArtikel);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const pageCount = Math.ceil(artikelData.length / artikelsPerPage);
+  const paginationNumbers = Array.from({ length: pageCount }, (_, i) => i + 1);
+
+  const handleDelete = (id) => {
+    deleteArtikel(id)
+      .then(() => {
+        setArtikelData((prevData) => prevData.filter((artikel) => artikel.id_artikel !== id));
+      })
+      .catch((error) => {
+        console.error("Error saat menghapus artikel:", error);
       });
-    }, []);
+  };
 
-    const indexOfLastArtikel = currentPage * artikelsPerPage;
-    const indexOfFirstArtikel = indexOfLastArtikel - artikelsPerPage;
-    const currentArticles = artikelData.slice(indexOfFirstArtikel, indexOfLastArtikel);
+  // Set imagehhhh
+  const openModal = (imageSrc) => {
+    setCurrentImage(imageSrc);
+    setIsModalOpen(true);
+  };
 
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
-    const pageCount = Math.ceil(artikelData.length / artikelsPerPage);
-    const paginationNumbers = Array.from({ length: pageCount }, (_, i) => i + 1);
+  const openDescriptionModal = (description) => {
+    setSelectedDescription(description);
+    setShowDescription(true);
+  };
 
-    const handleDelete = (id) => {
-      deleteArtikel(id)
-        .then(() => {
-          setArtikelData((prevData) => prevData.filter((artikel) => artikel.id_artikel !== id));
-        })
-        .catch((error) => {
-          console.error("Error saat menghapus artikel:", error);
-        });
-    };
+  const closeDescriptionModal = (e) => {
+    if (e.target === e.currentTarget) {
+      setShowDescription(false);
+    }
+  };
 
-    // Set imagehhhh
-    const openModal = (imageSrc) => {
-      setCurrentImage(imageSrc);
-      setIsModalOpen(true);
-    };
+  return (
+    <div className="bg-gray-50 min-h-screen py-6 px-2">
+      <div className="max-w-[95vw] mx-auto">
+        <h2 className="text-3xl font-bold text-gray-800 mb-8 flex items-center justify-center">
+          <span className="border-b-4 border-green-500 pb-2">Data Artikel</span>
+        </h2>
 
-    const closeModal = () => {
-      setIsModalOpen(false);
-    };
-
-    return (
-      <div className="bg-gray-100 min-h-screen py-1" style={{ marginLeft: "-20px", marginRight: "-20px" }}>
-        {/* Header */}
-        <div className="text-center mb-6">
-          <h2 className="text-3xl font-bold text-green-800 font-['Poppins'] underline">
-            Data Artikel
-          </h2>
-        </div>
-
-        {/* Tabel Desktop */}
-        <div className="hidden md:block bg-white shadow-lg rounded-md mx-auto w-full overflow-x-auto">
-          <table className="table-auto w-full border-collapse">
-            <thead>
-              <tr className="bg-green-800 text-white">
-                <th className="px-2 py-4 text-center font-medium max-w-[50px] break-words">Id</th>
-                <th className="px-2 py-4 text-center font-medium max-w-[100px] break-words">Tanggal Artikel</th>
-                <th className="px-2 py-4 text-center font-medium max-w-[150px] break-words">Judul Artikel</th>
-                <th className="px-2 py-4 text-center font-medium max-w-[100px] break-words">Author</th>
-                <th className="px-2 py-4 text-center font-medium max-w-[100px] break-words">Sumber Artikel</th>
-                <th className="px-2 py-4 text-center font-medium max-w-[200px] break-words">Deskripsi Singkat</th>
-                <th className="px-2 py-4 text-center font-medium max-w-[100px] break-words">Gambar Artikel</th>
-                <th className="px-2 py-4 text-center font-medium max-w-[100px] break-words">Lihat Artikel</th>
-                <th className="px-2 py-4 text-center font-medium max-w-[100px] break-words">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentArticles.map((artikel, index) => (
-                <tr key={artikel.id_artikel} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                  <td className="px-2 py-2 text-center border-b break-words max-w-[50px]">{artikel.id_artikel}</td>
-                  <td className="px-2 py-2 text-center border-b break-words max-w-[100px]">{artikel.tanggal_artikel}</td>
-                  <td className="px-2 py-2 text-center border-b break-words max-w-[150px]">{artikel.judul_artikel.slice(0, 50)}...</td>
-                  <td className="px-2 py-2 text-center border-b break-words max-w-[100px]">{artikel.author.slice(0, 50)}...</td>
-                  <td className="px-2 py-2 text-center border-b break-words max-w-[100px]">{artikel.sumber_artikel.slice(0, 50)}...</td>
-                  <td className="px-2 py-2 text-center border-b break-words max-w-[200px]">{artikel.isi_artikel.slice(0, 100)}...</td>
-                  <td className="px-2 py-2 border-b">
-                    {artikel.gambar_artikel ? (
-                      <div className="flex justify-center items-center cursor-pointer" onClick={() => openModal(showGambar(artikel.gambar_artikel))}>
-                        <img src={showGambar(artikel.gambar_artikel)} 
-                        alt="Gambar Artikel" 
-                        className="w-12 h-12 rounded" 
-                        />
-                      </div>
-                    ) : (
-                      <span className="text-gray-500">Tidak ada gambar</span>
-                    )}
-                  </td>
-                  <td className="px-2 py-2 text-center border-b break-words max-w-[100px]">
-                    <Link to={`/artikel/isi-artikel/${artikel.id_artikel}`} className="hover:text-green-600 hover:underline">
-                      Menuju Halaman Artikel
-                    </Link>
-                  </td>
-                  <td className="px-2 py-2 text-center border-b space-x-2">
-                    <button className="text-blue-700 hover:text-blue-900" title="Edit" onClick={() => navigate(`/update-artikel/${artikel.id_artikel}`)}>
-                      <FaEdit />
-                    </button>
-                    <button className="text-red-700 hover:text-red-900" title="Hapus" onClick={() => handleDelete(artikel.id_artikel)}>
-                      <FaTrash />
-                    </button>
-                  </td>
+        {/* Desktop Table */}
+        <div className="hidden md:block bg-white rounded-xl shadow-md overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-gradient-to-r from-green-700 to-green-800 text-white text-xs">
+                  <th className="px-2 py-3 text-center font-medium w-[5%]">Id</th>
+                  <th className="px-2 py-3 text-center font-medium w-[10%]">Tanggal</th>
+                  <th className="px-2 py-3 text-center font-medium w-[15%]">Judul</th>
+                  <th className="px-2 py-3 text-center font-medium w-[10%]">Author</th>
+                  <th className="px-2 py-3 text-center font-medium w-[25%]">Isi</th>
+                  <th className="px-2 py-3 text-center font-medium w-[15%]">Sumber</th>
+                  <th className="px-2 py-3 text-center font-medium w-[10%]">Gambar</th>
+                  <th className="px-2 py-3 text-center font-medium w-[10%]">Aksi</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {currentArticles.map((artikel, index) => (
+                  <tr key={artikel.id_artikel} 
+                      className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} 
+                      hover:bg-gray-100 transition-colors duration-150 text-xs`}>
+                    <td className="px-2 py-2 text-center border-b break-words max-w-[50px]">{artikel.id_artikel}</td>
+                    <td className="px-2 py-2 text-center border-b break-words max-w-[100px]">{artikel.tanggal_artikel}</td>
+                    <td className="px-2 py-2 text-center border-b break-words max-w-[150px]">{artikel.judul_artikel.slice(0, 50)}...</td>
+                    <td className="px-2 py-2 text-center border-b break-words max-w-[100px]">{artikel.author.slice(0, 50)}...</td>
+                    <td className="px-2 py-2 text-center border-b break-words max-w-[200px]">
+                      <div className="flex items-center justify-center space-x-2">
+                        <p className="truncate max-w-[200px]">
+                          {artikel.isi_artikel.slice(0, 50)}...
+                        </p>
+                        <button
+                          onClick={() => openDescriptionModal(artikel.isi_artikel)}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          <FaEye />
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-2 py-2 text-center border-b break-words max-w-[100px]">{artikel.sumber_artikel.slice(0, 50)}...</td>
+                    <td className="px-2 py-2 border-b">
+                      {artikel.gambar_artikel ? (
+                        <div className="flex justify-center items-center cursor-pointer" onClick={() => openModal(showGambar(artikel.gambar_artikel))}>
+                          <img src={showGambar(artikel.gambar_artikel)} 
+                          alt="Gambar Artikel" 
+                          className="w-12 h-12 rounded" 
+                          />
+                        </div>
+                      ) : (
+                        <span className="text-gray-500">Tidak ada gambar</span>
+                      )}
+                    </td>
+                    <td className="px-2 py-2 text-center border-b space-x-2">
+                      <button className="text-blue-700 hover:text-blue-900" title="Edit" onClick={() => navigate(`/update-artikel/${artikel.id_artikel}`)}>
+                        <FaEdit />
+                      </button>
+                      <button className="text-red-700 hover:text-red-900" title="Hapus" onClick={() => handleDelete(artikel.id_artikel)}>
+                        <FaTrash />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {isModalOpen && (
@@ -127,6 +148,27 @@ import { deleteArtikel, getArtikel, showGambar } from "../../../services/Artikel
               >
                 <BsFillXCircleFill />
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Description Modal with click outside handler */}
+        {showDescription && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+            onClick={closeDescriptionModal}
+          >
+            <div className="bg-white rounded-lg p-6 max-w-2xl w-11/12 max-h-[80vh] overflow-y-auto">
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="text-lg font-semibold">Detail Isi Artikel</h3>
+                <button
+                  onClick={() => setShowDescription(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <BsFillXCircleFill className="text-xl" />
+                </button>
+              </div>
+              <p className="text-gray-600 whitespace-pre-wrap">{selectedDescription}</p>
             </div>
           </div>
         )}
@@ -200,9 +242,12 @@ import { deleteArtikel, getArtikel, showGambar } from "../../../services/Artikel
         </div>
 
         {/* Tombol Tambah Artikel */}
-        <div className="flex justify-center mt-6">
-          <button onClick={() => navigate("/tambah-artikel")} className="bg-green-700 hover:bg-green-800 text-white font-semibold py-3 px-6 sm:w-50px w-50px rounded-lg shadow-lg">
-            Tambah Artikel
+        <div className="mt-6 flex justify-center">
+          <button 
+            onClick={() => navigate("/tambah-artikel")} 
+            className="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 shadow-md"
+          >
+            <FaPlus className="mr-2" /> Tambah Artikel Baru
           </button>
         </div>
 
@@ -233,7 +278,8 @@ import { deleteArtikel, getArtikel, showGambar } from "../../../services/Artikel
           </button>
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
-  export default ArtikelTable;
+export default ArtikelTable;

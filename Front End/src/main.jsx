@@ -7,6 +7,7 @@ import Artikel from "./pages/Artikel.jsx";
 import Laporan from "./pages/Laporan.jsx";
 import Login from "./pages/Login.jsx";
 import IsiArtikel from "./pages/Artikelisi.jsx";
+import FormLaporanPage from "./pages/FormLaporanPage.jsx";
 
 import "./index.css";
 import AdminDashboard from "./pages/admin/dashboard/Dashboard.jsx";
@@ -16,6 +17,7 @@ import TambahArtikel from "./pages/admin/Form/TambahArtikel.jsx";
 import UpdateArtikel from "./pages/admin/Form/UpdateArtikel.jsx";
 import Layout from "./components/Layout/Layout.jsx";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.jsx";
+import { AuthProvider } from "./context/AuthContext";
 
 const router = createBrowserRouter([
   {
@@ -84,10 +86,16 @@ const router = createBrowserRouter([
     path: "artikel/isi-artikel/:id",
     element: <IsiArtikel />,
   },
+  {
+    path: "/form-laporan",
+    element: <FormLaporanPage />,
+  },
 ]);
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>
 );

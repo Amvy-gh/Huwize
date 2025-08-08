@@ -39,7 +39,7 @@ const Hero = () => {
               animate="animate"
               className="text-3xl lg:text-5xl font-bold !leading-snug"
             >
-              Lestarikan Lingkungamu Menuju Desa Hijau
+              Lestarikan Lingkunganmu Menuju Desa Hijau
             </motion.h1>
 
             <motion.div

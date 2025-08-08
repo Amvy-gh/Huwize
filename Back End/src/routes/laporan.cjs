@@ -20,7 +20,7 @@ const laporanRouter = express.Router();
 
 const imagesPath = path.resolve(__dirname, "../../client_images/laporan");
 
-laporanRouter.get("/", accesValidation, getLaporanForm);
+laporanRouter.get("/", getLaporanForm);
 laporanRouter.post("/", createLaporanForm);
 laporanRouter.delete("/:id", accesValidation, deleteLaporanForm);
 laporanRouter.put("/:id", accesValidation, updateStatus);

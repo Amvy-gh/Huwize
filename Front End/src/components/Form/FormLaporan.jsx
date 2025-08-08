@@ -1,5 +1,4 @@
 import { InputLabel, TextAreaLabel } from "./InputLabel";
-import React from "react";
 import { useState } from "react";
 
 import { submitLaporan } from "../../services/Laporan/laporan.service";

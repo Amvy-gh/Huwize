@@ -4,14 +4,10 @@ const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 export const getLaporan = async (callback) => {
   try {
-    const res = await axios.get(`${serverUrl}laporan-lingkungan`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-    callback(res.data);
+    const response = await axios.get(`${serverUrl}laporan-lingkungan`);
+    callback(response.data);
   } catch (error) {
-    console.log(`${error.response.data.message}`);
+    console.error("Error fetching laporan:", error);
   }
 };
 export const submitLaporan = async (event) => {
@@ -55,7 +51,8 @@ export const submitLaporan = async (event) => {
   }
 };
 
-export const updateStatus = async (id, status, setLaporanStatus) => {
+export const updateStatus = async (id, status, 
+  s) => {
   const isConfirmed = confirm(
     "Apakah anda yakin untuk merubah status laporan?"
   );

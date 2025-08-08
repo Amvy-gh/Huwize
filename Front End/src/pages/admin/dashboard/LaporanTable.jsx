@@ -14,7 +14,17 @@ const LaporanTable = () => {
 
   useEffect(() => {
     getLaporan((data) => {
-      setLaporanData(data.data);
+      const sortedData = data.data.sort((a, b) => {
+        // First compare by status (Aktif comes first)
+        if (a.status !== b.status) {
+          return a.status === "Aktif" ? -1 : 1;
+        }
+        // If status is same, sort by date (newest first)
+        const dateA = new Date(a.tanggal_laporan.replace(',', ''));
+        const dateB = new Date(b.tanggal_laporan.replace(',', ''));
+        return dateB - dateA;
+      });
+      setLaporanData(sortedData);
     });
   }, []);
 

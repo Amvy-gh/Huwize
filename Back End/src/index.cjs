@@ -7,6 +7,7 @@ const artikelRouter = require("./routes/artikel.cjs");
 const adminRouter = require("./routes/admin.cjs");
 const visitorRouter = require("./routes/visitor.cjs");
 const { uploadHandler } = require("./middleware/file_upload/fileHandler.cjs");
+const corsOptions = require("./config/cors.cjs");
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -18,29 +19,9 @@ app.use((req, res, next) => {
 });
 
 // Middleware
+app.use(cors(corsOptions));
 app.use(express.json());
-
-// Daftar origin yang diizinkan
-const allowedOrigins = [
-  "https://huwize.vercel.app",
-  "http://localhost:5173"
-];
-
-// Konfigurasi CORS
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log("❌ CORS blocked for:", origin);
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true
-}));
-
-// Handle preflight (OPTIONS)
-app.options("*", cors());
+app.options("*", cors(corsOptions));
 
 // Upload handler
 app.use(uploadHandler);
@@ -50,6 +31,20 @@ app.use("/laporan-lingkungan", laporanRouter);
 app.use("/artikel-lingkungan", artikelRouter);
 app.use("/admin", adminRouter);
 app.use("/visitor", visitorRouter);
+
+// Error handling
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    message: "Something broke!", 
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined 
+  });
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
 
 // Start server
 app.listen(PORT, () => {

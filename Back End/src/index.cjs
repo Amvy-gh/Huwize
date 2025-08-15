@@ -14,9 +14,9 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 // ----- Global Middleware -----
-app.use(cors(corsOptions));               // aktifkan CORS duluan
-app.options("*", cors(corsOptions));      // handle preflight (OPTIONS)
-app.use(express.json());                  // parsing body JSON
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
+app.use(express.json());
 
 // Logging request
 app.use((req, res, next) => {
@@ -26,6 +26,11 @@ app.use((req, res, next) => {
 
 // Upload handler
 app.use(uploadHandler);
+
+// ----- Healthcheck -----
+app.get("/", (req, res) => {
+  res.json({ message: "Backend API running 🚀" });
+});
 
 // ----- Routes -----
 app.use("/laporan-lingkungan", laporanRouter);

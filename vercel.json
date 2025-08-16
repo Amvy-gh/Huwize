@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "Back End/src/index.cjs",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "Front End/package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist" }
+    }
+  ],
+  "routes": [
+    { "src": "/api/laporan-lingkungan/(.*)", "dest": "Back End/src/index.cjs" },
+    { "src": "/api/artikel-lingkungan/(.*)", "dest": "Back End/src/index.cjs" },
+    { "src": "/api/admin/(.*)", "dest": "Back End/src/index.cjs" },
+    { "src": "/api/visitor/(.*)", "dest": "Back End/src/index.cjs" },
+
+    { "src": "/assets/(.*)", "dest": "Front End/dist/assets/$1" },
+
+    { "src": "/.*", "dest": "Front End/dist/index.html" }
+  ]
+}

@@ -15,6 +15,7 @@ const app = express();
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(uploadHandler);
+app.use('/client_images', express.static('client_images')); // Tambahkan ini
 
 // ----- Routes -----
 app.use("/laporan-lingkungan", laporanRouter);

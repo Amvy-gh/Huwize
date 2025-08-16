@@ -1,42 +1,56 @@
 const multer = require("multer");
+const fs = require("fs");
+const path = require("path");
+
+// Buat fungsi untuk mengecek dan membuat direktori
+const ensureDirectoryExists = (dirPath) => {
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
+};
 
 const storageImage = multer.diskStorage({
   destination: (req, file, callback) => {
-    if (file.fieldname === "gambar_laporan") {
-      callback(null, "client_images/laporan");
-    } else if (file.fieldname === "gambar_artikel") {
-      callback(null, "client_images/artikel");
+    let uploadPath;
+
+    // Tentukan path berdasarkan route
+    if (req.path.includes("artikel")) {
+      uploadPath = "client_images/artikel";
+    } else if (req.path.includes("laporan")) {
+      uploadPath = "client_images/laporan";
     } else {
-      callback(null, null);
+      uploadPath = "client_images/others";
     }
+
+    // Buat direktori jika belum ada
+    ensureDirectoryExists(uploadPath);
+    callback(null, uploadPath);
   },
   filename: (req, file, callback) => {
     const uniqueSuffix =
-      new Date().toISOString().replace(/:/g, "-") + "-" + file.originalname;
-    callback(null, uniqueSuffix);
+      Date.now() + "-" + Math.round(Math.random() * 1e9);
+    callback(
+      null,
+      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
+    );
   },
 });
 
-const fileFilter = (req, file, callback) => {
-  if (
-    file.mimetype === "image/jpeg" ||
-    file.mimetype === "image/png" ||
-    file.mimetype === "image/jpg"
-  ) {
-    callback(null, true);
+// Filter file yang diizinkan
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image/")) {
+    cb(null, true);
   } else {
-    callback(
-      new Error(
-        "Hanya file berformat .jpg, .png, atau .jpeg yang diperbolehkan"
-      ),
-      false
-    );
+    cb(new Error("Not an image! Please upload only images."), false);
   }
 };
 
 const uploadHandler = multer({
   storage: storageImage,
   fileFilter: fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
 }).fields([
   { name: "gambar_laporan", maxCount: 1 },
   { name: "gambar_artikel", maxCount: 1 },

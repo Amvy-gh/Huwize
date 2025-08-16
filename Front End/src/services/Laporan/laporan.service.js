@@ -51,8 +51,7 @@ export const submitLaporan = async (event) => {
   }
 };
 
-export const updateStatus = async (id, status, 
-  s) => {
+export const updateStatus = async (id, status,) => {
   const isConfirmed = confirm(
     "Apakah anda yakin untuk merubah status laporan?"
   );

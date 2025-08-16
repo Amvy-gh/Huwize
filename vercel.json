@@ -2,41 +2,15 @@
   "version": 2,
   "builds": [
     {
-      "src": "Back End/src/index.cjs",
-      "use": "@vercel/node"
-    },
-    {
       "src": "Front End/dist/**",
       "use": "@vercel/static"
     }
   ],
   "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "Back End/src/index.cjs"
-    },
-    {
-      "src": "^/admin.*",
-      "dest": "Front End/dist/index.html"
-    },
-    {
-      "src": "^/admin-dashboard.*",
-      "dest": "Front End/dist/index.html"
-    },
-    {
-      "src": "^/assets/(.*)",
-      "dest": "Front End/dist/assets/$1"
-    },
-    {
-      "src": "/(.*)\\.(.+)$",
-      "dest": "Front End/dist/$1.$2"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "Front End/dist/index.html"
-    }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+    { "src": "^/admin.*", "dest": "Front End/dist/index.html" },
+    { "src": "^/admin-dashboard.*", "dest": "Front End/dist/index.html" },
+    { "src": "^/assets/(.*)", "dest": "Front End/dist/assets/$1" },
+    { "src": "/(.*)\\.(.+)$", "dest": "Front End/dist/$1.$2" },
+    { "src": "/(.*)", "dest": "Front End/dist/index.html" }
+  ]
 }

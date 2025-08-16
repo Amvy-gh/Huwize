@@ -24,9 +24,21 @@ app.use("/visitor", visitorRouter);
 
 // ----- Error Handling -----
 app.use((err, req, res, next) => {
-  res.status(500).json({
-    message: "Something broke!",
-    error: process.env.NODE_ENV === "development" ? err.message : undefined,
+  console.error("Error:", err); // Untuk logging error di server
+
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+
+  res.status(statusCode).json({
+    status: "error",
+    message: message,
+    error:
+      process.env.NODE_ENV === "development"
+        ? {
+            detail: err.message,
+            stack: err.stack,
+          }
+        : undefined,
   });
 });
 

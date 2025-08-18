@@ -8,6 +8,10 @@ import Laporan from "./pages/Laporan.jsx";
 import Login from "./pages/Login.jsx";
 import IsiArtikel from "./pages/Artikelisi.jsx";
 import FormLaporanPage from "./pages/FormLaporanPage.jsx";
+import Tutorial from "./pages/Tutorial.jsx";
+import Ecoenzym from "./pages/Tutorial/Ecoenzym.jsx";
+import PemetaanSampah from "./pages/Tutorial/PemetaanSampah.jsx";
+import PavingPlastik from "./pages/Tutorial/PavingPlastik.jsx";
 
 import "./index.css";
 import AdminDashboard from "./pages/admin/dashboard/Dashboard.jsx";
@@ -89,6 +93,22 @@ const router = createBrowserRouter([
   {
     path: "/form-laporan",
     element: <FormLaporanPage />,
+  },
+  {
+    path: "/tutorial",
+    element: <Tutorial />,
+  },
+  {
+    path: "/tutorial/ecoenzym",
+    element: <Ecoenzym />,
+  },
+  {
+    path: "/tutorial/pemetaan-sampah",
+    element: <PemetaanSampah />,
+  },
+  {
+    path: "/tutorial/paving-plastik",
+    element: <PavingPlastik />,
   },
 ]);
 

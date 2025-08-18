@@ -12,7 +12,7 @@ const setVisitor = (count) => {
 };
 
 const getTotalVisitor = () => {
-  const query = "SELECT COUNT(*) as total_visitor FROM web_visitor";
+  const query = "SELECT visitor as total_visitor FROM web_visitor";
 
   try {
     return dbPool.query(query);

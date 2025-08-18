@@ -121,3 +121,20 @@ export const getLaporanSelesai = async (callback) => {
     console.log(`${error.response.data.message}`);
   }
 };
+
+export const setNewVisitor = async () => {
+  try {
+    await axios.post(`${serverUrl}visitor`);
+  } catch (error) {
+    console.error("Error set visitor:", error);
+  }
+};
+
+export const getTotalVisitor = async (callback) => {
+  try {
+    const res = await axios.get(`${serverUrl}visitor/total`);
+    callback(res.data);
+  } catch (error) {
+    console.error("Error get total visitor:", error);
+  }
+};

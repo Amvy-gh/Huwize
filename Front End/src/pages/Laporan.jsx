@@ -5,7 +5,6 @@ import Footer from "../components/Footer/Footer";
 import { getLaporan, showGambarLaporan } from "../services/Laporan/laporan.service";
 import { FaFileAlt, FaSearch, FaChevronLeft, FaChevronRight, FaPlus, FaLeaf } from "react-icons/fa";
 import { BsFillXCircleFill } from 'react-icons/bs';
-import { useAuth } from "../context/AuthContext";
 
 const Laporan = () => {
   const [laporanData, setLaporanData] = useState([]);
@@ -24,6 +23,11 @@ const Laporan = () => {
       try {
         getLaporan((data) => {
           const sortedData = data.data.sort((a, b) => {
+            // First compare by status (Aktif/Dalam Proses comes first)
+            if (a.status !== b.status) {
+              return a.status === "Aktif" ? -1 : 1;
+            }
+            // If status is same, sort by date (newest first)
             const dateA = new Date(a.tanggal_laporan.replace(',', ''));
             const dateB = new Date(b.tanggal_laporan.replace(',', ''));
             return dateB - dateA;
@@ -43,7 +47,16 @@ const Laporan = () => {
       laporan.lokasi_laporan.toLowerCase().includes(searchTerm.toLowerCase()) ||
       laporan.deskripsi_laporan.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    setFilteredData(filtered);
+    // Maintain the same sorting after filtering
+    const sortedFiltered = filtered.sort((a, b) => {
+      if (a.status !== b.status) {
+        return a.status === "Aktif" ? -1 : 1;
+      }
+      const dateA = new Date(a.tanggal_laporan.replace(',', ''));
+      const dateB = new Date(b.tanggal_laporan.replace(',', ''));
+      return dateB - dateA;
+    });
+    setFilteredData(sortedFiltered);
     setCurrentPage(1);
   }, [searchTerm, laporanData]);
 
@@ -170,7 +183,7 @@ const Laporan = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
-                    {currentItems.map((laporan, index) => (
+                    {currentItems.map((laporan) => (
                       <tr key={laporan.id_laporan} 
                           className="hover:bg-gray-50 transition-colors duration-200 group">
                         <td className="px-6 py-5 text-sm text-gray-700 font-medium">

@@ -7,7 +7,7 @@ const tutorials = [
 	{
 		title: "Pemetaan Sampah",
 		description:
-			"Pelajari cara memetakan dan mengelola persebaran sampah di lingkungan sekitar.",
+			"Cek peta ini dan temukan titik-titik sampah di sekitarmu dengan mudah!",
 		icon: "🗺️",
 		color: "emerald",
 		href: "/tutorial/pemetaan-sampah",

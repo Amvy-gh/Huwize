@@ -17,13 +17,13 @@ const NavbarMenu = [
   },
   {
     id: 3,
-    title: "Lapor",
-    path: "/laporan",
+    title: "Tutorial",
+    path: "/tutorial",
   },
   {
     id: 4,
-    title: "Tutorial",
-    path: "/tutorial",
+    title: "Lapor",
+    path: "/laporan",
   },
 ];
 

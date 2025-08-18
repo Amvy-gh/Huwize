@@ -231,13 +231,6 @@ const PemetaanSampah = () => {
                 className="w-full h-auto object-contain max-h-[600px] mx-auto transition-transform duration-300 hover:scale-105"
                 style={{ imageRendering: 'high-quality' }}
               />
-              
-              {/* Scale Indicator */}
-              <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-md">
-                <div className="text-xs font-medium text-gray-600">
-                  Way Huwi, Lampung Selatan
-                </div>
-              </div>
             </div>
             
             {/* Map Description */}

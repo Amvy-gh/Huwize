@@ -7,7 +7,7 @@ const FormLaporan = () => {
     nama_pelapor: "",
     nomor_telepon: "",
     lokasi: "",
-    deskripsi: "",
+    deskripsi: "",  
     gambar_laporan: null
   });
   
@@ -70,30 +70,45 @@ const FormLaporan = () => {
   };
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors = {}; 
+    let isValid = true;
     
-    if (!formData.nama_pelapor.trim()) {
+    // Trim all string values before validation
+    const trimmedFormData = {
+      nama_pelapor: formData.nama_pelapor?.trim() || '',
+      nomor_telepon: formData.nomor_telepon?.trim() || '',
+      lokasi: formData.lokasi?.trim() || '',
+      deskripsi: formData.deskripsi?.trim() || ''
+    };
+    
+    if (!trimmedFormData.nama_pelapor) {
       newErrors.nama_pelapor = "Nama pelapor wajib diisi";
+      isValid = false;
     }
     
-    if (!formData.nomor_telepon.trim()) {
+    if (!trimmedFormData.nomor_telepon) {
       newErrors.nomor_telepon = "Nomor telepon wajib diisi";
-    } else if (!/^(\+62|62|0)[0-9]{9,13}$/.test(formData.nomor_telepon.replace(/\s/g, ''))) {
+      isValid = false;
+    } else if (!/^(\+62|62|0)[0-9]{9,13}$/.test(trimmedFormData.nomor_telepon.replace(/\s/g, ''))) {
       newErrors.nomor_telepon = "Nomor telepon tidak valid";
+      isValid = false;
     }
     
-    if (!formData.lokasi.trim()) {
+    if (!trimmedFormData.lokasi) {
       newErrors.lokasi = "Lokasi laporan wajib diisi";
+      isValid = false;
     }
     
-    if (!formData.deskripsi.trim()) {
+    if (!trimmedFormData.deskripsi) {
       newErrors.deskripsi = "Deskripsi laporan wajib diisi";
-    } else if (formData.deskripsi.trim().length < 10) {
+      isValid = false;
+    } else if (trimmedFormData.deskripsi.length < 10) {
       newErrors.deskripsi = "Deskripsi minimal 10 karakter";
+      isValid = false;
     }
     
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return isValid;
   };
 
   const handleSubmit = async (e) => {
@@ -107,30 +122,57 @@ const FormLaporan = () => {
     
     try {
       const formDataToSubmit = new FormData();
-      Object.keys(formData).forEach(key => {
-        if (formData[key] !== null) {
-          formDataToSubmit.append(key, formData[key]);
-        }
-      });
+      const date = new Date();
+      const currentDate = date.toLocaleDateString("id-ID");
+      
+      // Append all required fields
+      formDataToSubmit.append("tanggal_laporan", currentDate);
+      formDataToSubmit.append("nama", formData.nama_pelapor.trim());
+      formDataToSubmit.append("no_telepon", formData.nomor_telepon.trim());
+      formDataToSubmit.append("lokasi_laporan", formData.lokasi.trim());
+      formDataToSubmit.append("deskripsi_laporan", formData.deskripsi.trim());
+      formDataToSubmit.append("status", "Aktif");
+      
+      if (formData.gambar_laporan) {
+        formDataToSubmit.append("gambar_laporan", formData.gambar_laporan);
+      }
 
-      await submitLaporan(formDataToSubmit);
+      const response = await submitLaporan(formDataToSubmit);
       
-      // Reset form after successful submission
-      setFormData({
-        nama_pelapor: "",
-        nomor_telepon: "",
-        lokasi: "",
-        deskripsi: "",
-        gambar_laporan: null
-      });
-      setPreview(null);
-      
-      // Show success message (you can add toast notification here)
-      alert("Laporan berhasil dikirim!");
+      // Reset form only after successful submission
+      if (response) {
+        // Reset form state
+        setFormData({
+          nama_pelapor: "",
+          nomor_telepon: "",
+          lokasi: "",
+          deskripsi: "",
+          gambar_laporan: null
+        });
+        
+        // Reset file input and preview
+        setPreview(null);
+        const fileInput = document.querySelector('input[name="gambar_laporan"]');
+        if (fileInput) {
+          fileInput.value = '';
+        }
+        
+        // Clear any errors
+        setErrors({});
+        
+        // Show success message
+        alert("Laporan berhasil dikirim!");
+
+        // Optional: Redirect or refresh after short delay
+        setTimeout(() => {
+          window.location.href = "/laporan";
+        }, 1000);
+      }
       
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("Terjadi kesalahan saat mengirim laporan. Silakan coba lagi.");
+      const errorMessage = error.response?.data?.message || "Terjadi kesalahan saat mengirim laporan. Silakan coba lagi.";
+      alert(errorMessage);
     } finally {
       setIsLoading(false);
     }

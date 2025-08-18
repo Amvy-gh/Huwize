@@ -18,19 +18,39 @@ const Laporan = () => {
   const itemsPerPage = 5;
   const navigate = useNavigate();
 
+  // Improved date parsing with explicit number conversion and validation
+  const parseDate = (dateStr) => {
+    try {
+      const [day, month, year] = dateStr.split('/').map(Number);
+      const date = new Date(year, month - 1, day);
+      
+      // Validate if date is valid
+      if (isNaN(date.getTime())) {
+        console.error('Invalid date:', dateStr);
+        return new Date(0); // fallback to epoch
+      }
+      return date;
+    } catch (error) {
+      console.error('Error parsing date:', dateStr, error);
+      return new Date(0); // fallback to epoch
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         getLaporan((data) => {
           const sortedData = data.data.sort((a, b) => {
-            // First compare by status (Aktif/Dalam Proses comes first)
-            if (a.status !== b.status) {
-              return a.status === "Aktif" ? -1 : 1;
-            }
-            // If status is same, sort by date (newest first)
-            const dateA = new Date(a.tanggal_laporan.replace(',', ''));
-            const dateB = new Date(b.tanggal_laporan.replace(',', ''));
-            return dateB - dateA;
+            if ((a.status === "Aktif" || a.status === "Dalam Proses") && b.status === "Selesai") return -1;
+            if ((b.status === "Aktif" || b.status === "Dalam Proses") && a.status === "Selesai") return 1;
+
+            const dateA = parseDate(a.tanggal_laporan);
+            const dateB = parseDate(b.tanggal_laporan);
+
+            const diff = dateB.getTime() - dateA.getTime();
+            if (diff !== 0) return diff;
+
+            return b.id_laporan - a.id_laporan;
           });
           setLaporanData(sortedData);
           setFilteredData(sortedData);
@@ -42,20 +62,28 @@ const Laporan = () => {
     fetchData();
   }, []);
 
+  // Update filter function with same improved sorting
   useEffect(() => {
     const filtered = laporanData.filter(laporan =>
       laporan.lokasi_laporan.toLowerCase().includes(searchTerm.toLowerCase()) ||
       laporan.deskripsi_laporan.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    // Maintain the same sorting after filtering
+    
     const sortedFiltered = filtered.sort((a, b) => {
-      if (a.status !== b.status) {
-        return a.status === "Aktif" ? -1 : 1;
+      if ((a.status === "Aktif" || a.status === "Dalam Proses") && 
+          b.status === "Selesai") return -1;
+      if ((b.status === "Aktif" || b.status === "Dalam Proses") && 
+          a.status === "Selesai") return 1;
+      
+      const dateA = parseDate(a.tanggal_laporan);
+      const dateB = parseDate(b.tanggal_laporan);
+      
+      if (dateA && dateB) {
+        return dateB.getTime() - dateA.getTime();
       }
-      const dateA = new Date(a.tanggal_laporan.replace(',', ''));
-      const dateB = new Date(b.tanggal_laporan.replace(',', ''));
-      return dateB - dateA;
+      return 0;
     });
+
     setFilteredData(sortedFiltered);
     setCurrentPage(1);
   }, [searchTerm, laporanData]);

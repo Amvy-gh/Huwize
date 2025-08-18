@@ -30,13 +30,29 @@ export const InputLabel = ({
   );
 };
 
-export const TextAreaLabel = (props) => {
-  const { label, name, placeholder, variant } = props;
-
+export const TextAreaLabel = ({
+  label,
+  name,
+  placeholder,
+  variant,
+  value,
+  onChange,
+  required = true,
+  className,
+}) => {
   return (
     <div className="mb-6">
       <Label htmlFor={name}>{label}</Label>
-      <TextArea name={name} placeholder={placeholder} />
+      <TextArea
+        name={name}
+        placeholder={placeholder}
+        variant={variant}
+        value={value}
+        onChange={onChange}
+        required={required}
+        className={className}
+      />
     </div>
   );
 };
+

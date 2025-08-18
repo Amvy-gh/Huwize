@@ -21,7 +21,19 @@ const getTotalVisitor = () => {
   }
 };
 
+const getLaporanTotal = () => {
+  const query = "SELECT COUNT(*) as total FROM laporan_lingkungan";
+  return dbPool.query(query);
+};
+
+const getLaporanSelesaiTotal = () => {
+  const query = "SELECT COUNT(*) as total FROM laporan_lingkungan WHERE status = 'Selesai'";
+  return dbPool.query(query);
+};
+
 module.exports = {
   setVisitor,
   getTotalVisitor,
+  getLaporanTotal,
+  getLaporanSelesaiTotal,
 };

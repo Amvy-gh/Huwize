@@ -12,11 +12,12 @@ const setNewVisitor = async (req, res) => {
 
 const totalVisitor = async (req, res) => {
   try {
-    const [total] = await getTotalVisitor();
-    const count = total.reduce((acc, curr) => acc + curr.total_visitor, 0);
+    const [result] = await getTotalVisitor();
+    const total = result[0].total_visitor || 0;
+    
     res.status(200).json({ 
       message: "Total visitor retrieved successfully",
-      total: count 
+      total: total
     });
   } catch (error) {
     console.error("Error in totalVisitor:", error);

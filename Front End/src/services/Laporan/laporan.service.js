@@ -68,17 +68,27 @@ export const showGambarLaporan = (path) => {
 };
 
 // Get total laporan
-export const getTotalLaporan = async () => {
-  const res = await axios.get(`${serverUrl}laporan-lingkungan/laporan/total`);
-  return res.data;
+export const getTotalLaporan = async (callback) => {
+  try {
+    const res = await axios.get(`${serverUrl}laporan-lingkungan/laporan/total`);
+    callback(res.data);
+  } catch (error) {
+    console.error("Error getting total laporan:", error);
+    callback({ total: 0 });
+  }
 };
 
 // Get laporan selesai
-export const getLaporanSelesai = async () => {
-  const res = await axios.get(
-    `${serverUrl}laporan-lingkungan/laporan/total/selesai`
-  );
-  return res.data;
+export const getLaporanSelesai = async (callback) => {
+  try {
+    const res = await axios.get(
+      `${serverUrl}laporan-lingkungan/laporan/total/selesai`
+    );
+    callback(res.data);
+  } catch (error) {
+    console.error("Error getting laporan selesai:", error);
+    callback({ total: 0 });
+  }
 };
 
 // Tambah visitor baru
@@ -87,7 +97,12 @@ export const setNewVisitor = async () => {
 };
 
 // Get total visitor
-export const getTotalVisitor = async () => {
-  const res = await axios.get(`${serverUrl}visitor/total`);
-  return res.data;
+export const getTotalVisitor = async (callback) => {
+  try {
+    const res = await axios.get(`${serverUrl}visitor/total`);
+    callback(res.data);
+  } catch (error) {
+    console.error("Error getting total visitors:", error);
+    callback({ total: 0 });
+  }
 };
